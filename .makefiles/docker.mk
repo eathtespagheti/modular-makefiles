@@ -106,4 +106,4 @@ $(addprefix $(logs-prefix), $(SERVICES)): $(logs-prefix)%:
 	@$(DOCKER-LOGS) $*
 
 
-.PHONY: secrets build up $(addprefix $(up-prefix), $(SERVICES)) down $(addprefix $(down-prefix), $(SERVICES)) clean fix-ownership list-services $(addprefix $(start-prefix), $(SERVICES)) $(addprefix $(restart-prefix), $(SERVICES)) $(addprefix $(stop-prefix), $(SERVICES)) $(addprefix $(shell-prefix), $(SERVICES)) log $(addprefix $(logs-prefix), $(SERVICES))
+.PHONY: secrets build up up-servicename $(addprefix $(up-prefix), $(SERVICES)) down down-servicename $(addprefix $(down-prefix), $(SERVICES)) clean fix-ownership list-services start-servicename $(addprefix $(start-prefix), $(SERVICES)) restart-servicename $(addprefix $(restart-prefix), $(SERVICES)) stop-servicename $(addprefix $(stop-prefix), $(SERVICES)) shell-servicename $(addprefix $(shell-prefix), $(SERVICES)) logs logs-servicename $(addprefix $(logs-prefix), $(SERVICES))
