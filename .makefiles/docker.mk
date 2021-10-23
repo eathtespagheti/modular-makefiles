@@ -2,8 +2,8 @@ include .makefiles/common.mk
 
 COMPOSE ::= DOCKER_BUILDKIT=1 ${shell docker compose > /dev/null 2>&1 && echo "docker compose" || echo "docker-compose"}
 COMPOSE-FILES ::= $(shell find -name "docker-compose.y*ml")
+COMPOSE-DEBUG-FILES ::= $(shell find -name "docker-compose.debug.y*ml")
 COMPOSE-PRESET = $(COMPOSE) $(COMPOSE-FILES:%=-f %)
-COMPOSE-DEBUG-FILES = $(shell find -name "docker-compose.debug.y*ml")
 COMPOSE-DEBUG-PRESET = $(COMPOSE-PRESET) $(COMPOSE-DEBUG-FILES:%=-f %)
 DOCKER-EXEC = $(COMPOSE-DEBUG-PRESET) exec
 WEBAPP-CONTAINER-PATH ::= /webapp
