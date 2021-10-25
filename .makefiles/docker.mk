@@ -18,7 +18,6 @@ fix-ownership-project = $(call fix-ownership-of,$(WEBAPP-CONTAINER-PATH))
 generate-random-string = tr -dc A-Za-z0-9 </dev/urandom | head -c
 
 # Services
-WEBAPP-SERVICE ::= webapp
 SERVICES = $(WEBAPP-SERVICE) $(EXTRA-SERVICES)
 WEBAPP-DEBUG-SERVICE = $(WEBAPP-SERVICE)-debug
 
