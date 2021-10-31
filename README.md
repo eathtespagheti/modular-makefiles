@@ -16,7 +16,7 @@ Contains common basic functions, like the help function that scans for comments 
 
 ### [docker.mk](.makefiles/docker.mk)
 
-By default [`docker.mk`](.makefiles/docker.mk) suppose you have a webapp service in a `docker-compose.y*ml` file, also it search for a `docker-compose.debug.y*ml` file.
+This extension [`docker.mk`](.makefiles/docker.mk) suppose you have a webapp service in a `docker-compose.y*ml` file, also it search for a `docker-compose.debug.y*ml` and a `docker-compose.dev*.y*ml` file.
 
 Docker makefile behaviour can be customized with some variables:
 
@@ -26,14 +26,14 @@ Docker makefile behaviour can be customized with some variables:
 * `EXTRA-COMPOSE-FILES`: list of extra docker compose files to include
 * `WEBAPP-SERVICE`: name of the webapp service, default to `webapp`
 * `WEBAPP-CONTAINER-PATH`: path of the webapp source code inside the `WEBAPP-SERVICE` container
-* `EXTRA-SERVICES`: list of extra services for which makefile targets should be generated. **This variable should be defines before importing [`docker.mk`](.makefiles/docker.mk)**
+* `EXTRA-SERVICES`: list of extra services for which makefile targets should be generated.
 * `WEBAPP-DEBUG-SERVICE`: name of the debug service for webapp, defaults to `$(WEBAPP-SERVICE)-debug`
 * `SECRETS_FOLDER`: folder where docker secrets should be stored, defaults to empty string
 * `SECRETS_LIST`: list of space separated secrets files that should be present in `SECRETS_FOLDER`, defaults to empty string, when defined it automatically generate those files if they are missing (and write inside them a random 32 characters string)
 
 ### [django.mk](.makefiles/django.mk)
 
-By default this setup import [`docker.mk`](.makefiles/docker.mk) and change `WEBAPP-SERVICE` to `django`
+Import [`docker.mk`](.makefiles/docker.mk) and change `WEBAPP-SERVICE` to `django`
 
 There's an extra configurable variable, named `DB_FILE`, it define a filename where to write dumped data from django dumpdata, by default it's `db.json`
 
