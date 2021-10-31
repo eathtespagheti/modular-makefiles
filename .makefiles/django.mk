@@ -18,7 +18,6 @@ dumpdata: ## Dump webapp database ad fixtures in db.json
 	@$(call fix-ownership-of,$(DB_FILE))
 
 collectstatic: ## Launch collectstatic in Django webapp 
-	@$(DOCKER-EXEC) $(WEBAPP-SERVICE) rm -rf /static/hemport/stylesheets/hemport.css
 	@$(DOCKER-EXEC) $(WEBAPP-SERVICE) django-admin collectstatic --noinput
 
 first-setup: up ## Get up the containers, setup database and load fixtures
