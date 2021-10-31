@@ -33,9 +33,17 @@ Docker makefile behaviour can be customized with some variables:
 
 ### [django.mk](.makefiles/django.mk)
 
+Setup for django applications.
+
 Import [`docker.mk`](.makefiles/docker.mk) and change `WEBAPP-SERVICE` to `django`
 
 There's an extra configurable variable, named `DB_FILE`, it define a filename where to write dumped data from django dumpdata, by default it's `db.json`
+
+### [node.mk](.makefiles/node.mk)
+
+Setup for node applications.
+
+Import [`docker.mk`](.makefiles/docker.mk) and change `WEBAPP-SERVICE` to `node`, adds some node specific targets
 
 ## Write custom extensions
 
