@@ -1,12 +1,18 @@
 # Modular Makefiles
 
-Collection of docker based makefiles that work out of the box
+Collection of docker based makefiles that work out of the box, note that everything follow the GNU Make specifications, so it isn't guaranteed to work on generic POSIX Make
 
 ## How to use it
 
 Check [`Makefile`](Makefile) for an example on how to use this setup
 
 ## Setup
+
+Every makefile extensions has some variables for setting it up, note that every custom value for those variables should be set **BEFORE** importing
+
+### [common.mk](.makefiles/common.mk)
+
+Contains common basic functions, like the help function that scans for comments in all the targets
 
 ### [docker.mk](.makefiles/docker.mk)
 
@@ -17,6 +23,7 @@ Docker makefile behaviour can be customized with some variables:
 * `COMPOSE`: define the executable name for docker compose (default to `docker compose` or `docker-compose`)
 * `COMPOSE-FILES`: list of space separated docker-compose files to use, by default automatically finds them via `find`
 * `COMPOSE-DEBUG-FILES`: list of space separated docker-compose debugging files, by default automatically finds them via `find`
+* `EXTRA-COMPOSE-FILES`: list of extra docker compose files to include
 * `WEBAPP-SERVICE`: name of the webapp service, default to `webapp`
 * `WEBAPP-CONTAINER-PATH`: path of the webapp source code inside the `WEBAPP-SERVICE` container
 * `EXTRA-SERVICES`: list of extra services for which makefile targets should be generated. **This variable should be defines before importing [`docker.mk`](.makefiles/docker.mk)**
