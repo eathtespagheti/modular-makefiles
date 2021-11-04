@@ -6,10 +6,11 @@ COMPOSE-FILES ?= $(shell find . -name "docker-compose.y*ml")
 COMPOSE-DEBUG-FILES ?= $(shell find . -name "docker-compose.debug*.y*ml")
 COMPOSE-DEVELOP-FILES ?= $(shell find . -name "docker-compose.dev*.y*ml")
 EXTRA-COMPOSE-FILES ?= 
+ALL-COMPOSE-FILES = $(COMPOSE-FILES) $(COMPOSE-DEBUG-FILES) $(COMPOSE-DEVELOP-FILES) $(EXTRA-COMPOSE-FILES)
 COMPOSE-BASE-PRESET = $(COMPOSE) $(COMPOSE-FILES:%=-f %)
 COMPOSE-DEVELOP-PRESET = $(COMPOSE-BASE-PRESET) $(COMPOSE-DEVELOP-FILES:%=-f %)
 COMPOSE-DEBUG-PRESET = $(COMPOSE-BASE-PRESET) $(COMPOSE-DEBUG-FILES:%=-f %)
-COMPOSE-ALL-PRESET = $(COMPOSE-BASE-PRESET) $(COMPOSE-DEVELOP-FILES:%=-f %) $(COMPOSE-DEBUG-FILES:%=-f %) $(EXTRA-COMPOSE-FILES:%=-f %)
+COMPOSE-ALL-PRESET = $(COMPOSE) $(ALL-COMPOSE-FILES:%=-f %)
 
 # Other Docker commands
 DOCKER-EXEC = $(COMPOSE-ALL-PRESET) exec
@@ -25,8 +26,8 @@ fix-ownership-project = $(call fix-ownership-of,$(WEBAPP-CONTAINER-PATH))
 generate-random-string = tr -dc A-Za-z0-9 </dev/urandom | head -c
 
 # Services
-SERVICES = $(WEBAPP-SERVICE) $(EXTRA-SERVICES)
 WEBAPP-DEBUG-SERVICE = $(WEBAPP-SERVICE)-debug
+SERVICES = $(WEBAPP-SERVICE) $(EXTRA-SERVICES) $(WEBAPP-DEBUG-SERVICE)
 
 # Prefixes
 logs-prefix ?= logs-
@@ -38,6 +39,7 @@ shell-prefix ?= shell-
 start-prefix ?= start-
 
 # Other variables
+WEBAPP-SERVICE ?= webapp
 WEBAPP-CONTAINER-PATH ?= /webapp
 SECRETS_FOLDER ?= secrets
 SECRETS_LIST ?=
@@ -72,9 +74,12 @@ $(addprefix $(down-prefix), $(SERVICES)): $(down-prefix)%:
 
 down-servicename: ## Down the service named servicename
 
-clean: ## Docker compose up on all project files, also delete all the volumes
+clean-docker: ## Docker compose down on all project compose files, also delete all the volumes
 	@$(COMPOSE-ALL-PRESET) down --remove-orphans -v
-	@rm -rf $(SECRETS_FOLDER)
+	@-rm -rf $(SECRETS_FOLDER)
+
+nuke-docker: ## Nuke everything related to docker in this project
+	@-docker image rm -f $(shell grep -oh "image: .*" $(ALL-COMPOSE-FILES) | cut -d ' ' -f 2 | tr '\n' ' ')
 
 ps: ## List docker containers
 	@$(COMPOSE-ALL-PRESET) ps
@@ -122,4 +127,4 @@ $(addprefix $(logs-prefix), $(SERVICES)): $(logs-prefix)%:
 	@$(DOCKER-LOGS) $*
 
 
-.PHONY: secrets build up up-servicename $(addprefix $(up-prefix), $(SERVICES)) down down-servicename $(addprefix $(down-prefix), $(SERVICES)) clean fix-ownership list-services start-servicename $(addprefix $(start-prefix), $(SERVICES)) restart-servicename $(addprefix $(restart-prefix), $(SERVICES)) stop-servicename $(addprefix $(stop-prefix), $(SERVICES)) shell-servicename $(addprefix $(shell-prefix), $(SERVICES)) logs logs-servicename $(addprefix $(logs-prefix), $(SERVICES)) ps push
+.PHONY: secrets build up up-servicename $(addprefix $(up-prefix), $(SERVICES)) down down-servicename $(addprefix $(down-prefix), $(SERVICES)) clean-docker fix-ownership list-services start-servicename $(addprefix $(start-prefix), $(SERVICES)) restart-servicename $(addprefix $(restart-prefix), $(SERVICES)) stop-servicename $(addprefix $(stop-prefix), $(SERVICES)) shell-servicename $(addprefix $(shell-prefix), $(SERVICES)) logs logs-servicename $(addprefix $(logs-prefix), $(SERVICES)) ps push
