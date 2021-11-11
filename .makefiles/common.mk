@@ -19,6 +19,6 @@ clean-dist-files: ## Remove all files that could be regenrated form dist files
 	@-rm $(__DIST_FILES_NO_EXTENSION)
 
 .PHONY: nuke-git
-nuke-git: ##
+nuke-git: ## Make a reset hard and clean repository
 	@git reset --hard
 	@git clean -fd
