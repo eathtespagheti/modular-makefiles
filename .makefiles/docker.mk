@@ -14,14 +14,14 @@ COMPOSE-ALL-PRESET = $(COMPOSE) $(ALL-COMPOSE-FILES:%=-f %)
 
 # Other Docker commands
 DOCKER-EXEC = $(COMPOSE-ALL-PRESET) exec
-DOCKER-RUN = $(COMPOSE-ALL-PRESET) run
+DOCKER-RUN = $(COMPOSE-ALL-PRESET) run --rm
 DOCKER-LOGS = $(COMPOSE-ALL-PRESET) logs -f
 
 # Functions
 getUID = $(shell id -u)
 getGID = $(shell id -g)
 getUIDandGID = $(getUID):$(getGID)
-executeAsSuperuser = docker run -u 0 -v "$(shell pwd)":/src alpine sh -c "$(1)"
+executeAsSuperuser = docker run --rm -u 0 -v "$(shell pwd)":/src alpine sh -c "$(1)"
 fixOwnershipOf = $(call executeAsSuperuser,chown -R $(getUIDandGID) /src/$(1))
 fixOwnershipProject = $(call fixOwnershipOf,.)
 generate-random-string = tr -dc A-Za-z0-9 </dev/urandom | head -c
