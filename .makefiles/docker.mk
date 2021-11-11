@@ -21,8 +21,9 @@ DOCKER-LOGS = $(COMPOSE-ALL-PRESET) logs -f
 getUID = $(shell id -u)
 getGID = $(shell id -g)
 getUIDandGID = $(getUID):$(getGID)
-fix-ownership-of = $(DOCKER-EXEC) -u 0 $(WEBAPP-SERVICE) chown -R $(getUIDandGID) $(1)
-fix-ownership-project = $(call fix-ownership-of,$(WEBAPP-CONTAINER-PATH))
+executeAsSuperuser = docker run -u 0 -v "$(shell pwd)":/src alpine sh -c "$(1)"
+fixOwnershipOf = $(call executeAsSuperuser,chown -R $(getUIDandGID) /src/$(1))
+fixOwnershipProject = $(call fixOwnershipOf,.)
 generate-random-string = tr -dc A-Za-z0-9 </dev/urandom | head -c
 
 # Services
@@ -103,7 +104,7 @@ push: ## Push all builded docker images in project
 # Webapp container targets
 .PHONY: fix-ownership
 fix-ownership: ## Change ownership to user for all project files
-	@$(fix-ownership-project)
+	@$(fixOwnershipProject)
 
 
 # Services targets

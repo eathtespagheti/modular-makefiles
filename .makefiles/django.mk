@@ -6,7 +6,7 @@ WEBAPP-SERVICE ?= django
 .PHONY: migrations
 migrations: ## Make Django migrations
 	@$(DOCKER-EXEC) -u 0 $(WEBAPP-SERVICE) django-admin makemigrations
-	@$(fix-ownership-project)
+	@$(fixOwnershipProject)
 
 .PHONY: migrate
 migrate: ## Apply migrations 
