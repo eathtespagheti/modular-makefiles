@@ -11,6 +11,7 @@ clean: ## Launch all the clean targets
 
 .PHONY: nuke-force
 nuke-force:
+	@-$(MAKE) fix-ownership
 	@-$(MAKE) clean
 	@-$(MAKE) nuke-docker
 	@-$(MAKE) nuke-git
