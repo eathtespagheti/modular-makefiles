@@ -19,6 +19,7 @@ clean-dist-files: ## Remove all files that could be regenrated form dist files
 	@-rm $(__DIST_FILES_NO_EXTENSION)
 
 .PHONY: nuke-git
-nuke-git: ## Make a reset hard and clean repository
+nuke-git: ## Remove all files in gitignore and reset the git repo
+	@-rm -rf $(shell for file in $$(find . -type f -name ".gitignore"); do dir="$$(dirname "$$file")"; grep -v "^#" "$$file" | grep -v "^$$" | sed "s#.*#$$dir/&#"; done)
 	@git reset --hard
 	@git clean -fd
