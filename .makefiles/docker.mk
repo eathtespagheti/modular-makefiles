@@ -55,76 +55,104 @@ secrets: $(shell for secret in $(SECRETS_LIST); do printf "$(SECRETS_FOLDER)/$$s
 
 
 # Docker compose targets
+.PHONY: build
 build: ## Build all needed images from docker compose
 	@$(COMPOSE-BASE-PRESET) build
 
+.PHONY: up
 up: secrets ## Docker compose up on all project files
 	@$(COMPOSE-DEVELOP-PRESET) up -d
 
+.PHONY: up-servicename
 up-servicename: ## Up the service named servicename
 
-$(addprefix $(up-prefix), $(SERVICES)): $(up-prefix)%:
+__COMPILED_UP_PREFIX := $(addprefix $(up-prefix), $(SERVICES))
+.PHONY: $(__COMPILED_UP_PREFIX)
+$(__COMPILED_UP_PREFIX): $(up-prefix)%:
 	@$(COMPOSE-ALL-PRESET) up -d $*
 
+.PHONY: down
 down: ## Docker compose down on all project files
 	@$(COMPOSE-ALL-PRESET) down
 
-$(addprefix $(down-prefix), $(SERVICES)): $(down-prefix)%:
+__COMPILED_DOWN_PREFIX := $(addprefix $(down-prefix), $(SERVICES))
+.PHONY: $(__COMPILED_DOWN_PREFIX)
+$(__COMPILED_DOWN_PREFIX): $(down-prefix)%:
 	@$(COMPOSE-ALL-PRESET) rm -s -v -f $*
 
+.PHONY: down-servicename
 down-servicename: ## Down the service named servicename
 
+.PHONY: clean-docker
 clean-docker: ## Docker compose down on all project compose files, also delete all the volumes
 	@$(COMPOSE-ALL-PRESET) down --remove-orphans -v
 	@-rm -rf $(SECRETS_FOLDER)
 
+.PHONY: nuke-docker
 nuke-docker: ## Nuke everything related to docker in this project
 	@-docker image rm -f $(shell grep -oh "image: .*" $(ALL-COMPOSE-FILES) | cut -d ' ' -f 2 | tr '\n' ' ')
 
+.PHONY: ps
 ps: ## List docker containers
 	@$(COMPOSE-ALL-PRESET) ps
 
+.PHONY: push
 push: ## Push all builded docker images in project
 	@$(COMPOSE-BASE-PRESET) push
 
 # Webapp container targets
+.PHONY: fix-ownership
 fix-ownership: ## Change ownership to user for all project files
 	@$(fix-ownership-project)
 
 
 # Services targets
+.PHONY: list-services
 list-services: ## List all declared docker compose services
 	@echo $(SERVICES)
 
+.PHONY: start-servicename
 start-servicename: ## Start service named servicename
 
-$(addprefix $(start-prefix), $(SERVICES)): $(start-prefix)%:
+__COMPILED_START_PREFIX := $(addprefix $(start-prefix), $(SERVICES))
+.PHONY: $(__COMPILED_START_PREFIX)
+$(__COMPILED_START_PREFIX): $(start-prefix)%:
 	@$(COMPOSE-ALL-PRESET) start $*
 
+.PHONY: restart-servicename
 restart-servicename: ## Restart service named servicename
 
-$(addprefix $(restart-prefix), $(SERVICES)): $(restart-prefix)%:
+__COMPILED_RESTART_PREFIX := $(addprefix $(restart-prefix), $(SERVICES))
+.PHONY: $(__COMPILED_RESTART_PREFIX)
+$(__COMPILED_RESTART_PREFIX): $(restart-prefix)%:
 	@$(COMPOSE-ALL-PRESET) restart $*
 
+.PHONY: stop-servicename
 stop-servicename: ## Stop service named servicename
 
-$(addprefix $(stop-prefix), $(SERVICES)): $(stop-prefix)%:
+__COMPILED_STOP_PREFIX := $(addprefix $(stop-prefix), $(SERVICES))
+.PHONY: $(__COMPILED_STOP_PREFIX)
+$(__COMPILED_STOP_PREFIX): $(stop-prefix)%:
 	@$(COMPOSE-ALL-PRESET) stop $*
 
+.PHONY: shell-servicename
 shell-servicename: ## Open shell for service named servicename
 
-$(addprefix $(shell-prefix), $(SERVICES)): $(shell-prefix)%:
+__COMPILED_SHELL_PREFIX := $(addprefix $(shell-prefix), $(SERVICES))
+.PHONY: $(__COMPILED_SHELL_PREFIX)
+$(__COMPILED_SHELL_PREFIX): $(shell-prefix)%:
 	@$(DOCKER-EXEC) $* sh || $(DOCKER-RUN) $* sh
 
 
 # Logging targets
+.PHONY: logs
 logs: ## Show all containers logs
 	@$(DOCKER-LOGS)
 
+.PHONY: logs-servicename
 logs-servicename: ## Show logs for service named servicename
 
-$(addprefix $(logs-prefix), $(SERVICES)): $(logs-prefix)%:
+__COMPILED_LOGS_PREFIX := $(addprefix $(logs-prefix), $(SERVICES))
+.PHONY: $(__COMPILED_LOGS_PREFIX)
+$(__COMPILED_LOGS_PREFIX): $(logs-prefix)%:
 	@$(DOCKER-LOGS) $*
-
-
-.PHONY: secrets build up up-servicename $(addprefix $(up-prefix), $(SERVICES)) down down-servicename $(addprefix $(down-prefix), $(SERVICES)) clean-docker fix-ownership list-services start-servicename $(addprefix $(start-prefix), $(SERVICES)) restart-servicename $(addprefix $(restart-prefix), $(SERVICES)) stop-servicename $(addprefix $(stop-prefix), $(SERVICES)) shell-servicename $(addprefix $(shell-prefix), $(SERVICES)) logs logs-servicename $(addprefix $(logs-prefix), $(SERVICES)) ps push
