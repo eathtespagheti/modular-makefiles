@@ -46,7 +46,7 @@ debug-tests: generate-from-dist ## Start tests but listen and wait for debugger
 
 .PHONY: debug-stop
 debug-stop: ## Stop all debugging containers
-	@$(MAKE) down-$(WEBAPP-SERVICE)
+	@$(MAKE) stop-$(WEBAPP-SERVICE)
 
 .PHONY: nuke-node
 nuke-node:
