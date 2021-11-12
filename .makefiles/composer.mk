@@ -1,7 +1,7 @@
 include .makefiles/docker.mk
 
 WEBAPP-SERVICE ?= php
-COMPOSER = $(DOCKER-RUN) composer --no-interaction
+COMPOSER = $(DOCKER-RUN) -u $(getUID) $(WEBAPP-SERVICE) composer --no-interaction
 
 .PHONY: composer-update
 composer-update: ## Run composer update
