@@ -1,6 +1,9 @@
 .DEFAULT_GOAL ?= help
 from-dist-to-file = cp $(1).dist $(1)
 DIST-FILES ?= $(shell find . -name "*.dist")
+getUID = $(shell id -u)
+getGID = $(shell id -g)
+getUIDandGID = $(getUID):$(getGID)
 
 .PHONY: help
 help: ## Print this message
