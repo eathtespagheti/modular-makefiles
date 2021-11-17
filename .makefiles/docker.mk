@@ -3,13 +3,11 @@ include .makefiles/common.mk
 # Docker compose realted
 COMPOSE ?= DOCKER_BUILDKIT=1 ${shell docker compose > /dev/null 2>&1 && echo "docker compose" || echo "docker-compose"}
 COMPOSE-FILES ?= $(shell find . -name "docker-compose.y*ml")
-COMPOSE-DEBUG-FILES ?= $(shell find . -name "docker-compose.debug*.y*ml")
-COMPOSE-DEVELOP-FILES ?= $(shell find . -name "docker-compose.dev*.y*ml")
+COMPOSE-DEVELOPMENT-FILES ?= $(shell find . -name "docker-compose.dev*.y*ml")
 EXTRA-COMPOSE-FILES ?= 
-ALL-COMPOSE-FILES = $(COMPOSE-FILES) $(COMPOSE-DEBUG-FILES) $(COMPOSE-DEVELOP-FILES) $(EXTRA-COMPOSE-FILES)
+ALL-COMPOSE-FILES = $(COMPOSE-FILES) $(COMPOSE-DEVELOPMENT-FILES) $(EXTRA-COMPOSE-FILES)
 COMPOSE-BASE-PRESET = $(COMPOSE) $(COMPOSE-FILES:%=-f %)
-COMPOSE-DEVELOP-PRESET = $(COMPOSE-BASE-PRESET) $(COMPOSE-DEVELOP-FILES:%=-f %)
-COMPOSE-DEBUG-PRESET = $(COMPOSE-BASE-PRESET) $(COMPOSE-DEBUG-FILES:%=-f %)
+COMPOSE-DEVELOPMENT-PRESET = $(COMPOSE-BASE-PRESET) $(COMPOSE-DEVELOPMENT-FILES:%=-f %)
 COMPOSE-ALL-PRESET = $(COMPOSE) $(ALL-COMPOSE-FILES:%=-f %)
 
 # Other Docker commands
@@ -59,7 +57,7 @@ build: ## Build all needed images from docker compose
 
 .PHONY: up
 up: secrets ## Docker compose up on all project files
-	@$(COMPOSE-DEVELOP-PRESET) up -d
+	@$(COMPOSE-DEVELOPMENT-PRESET) up -d
 
 .PHONY: up-servicename
 up-servicename: ## Up the service named servicename
