@@ -55,7 +55,7 @@ secrets: $(shell for secret in $(SECRETS_LIST); do printf "$(SECRETS_FOLDER)/$$s
 # Docker compose targets
 .PHONY: build
 build: ## Build all needed images from docker compose
-	@$(COMPOSE-BASE-PRESET) build
+	@$(COMPOSE-ALL-PRESET) build
 
 .PHONY: up
 up: secrets ## Docker compose up on all project files
@@ -96,7 +96,7 @@ ps: ## List docker containers
 
 .PHONY: push
 push: ## Push all builded docker images in project
-	@$(COMPOSE-BASE-PRESET) push
+	@$(COMPOSE-ALL-PRESET) push
 
 # Webapp container targets
 .PHONY: fix-ownership
