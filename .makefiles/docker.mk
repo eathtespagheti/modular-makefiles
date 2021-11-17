@@ -4,10 +4,12 @@ include .makefiles/common.mk
 COMPOSE ?= DOCKER_BUILDKIT=1 ${shell docker compose > /dev/null 2>&1 && echo "docker compose" || echo "docker-compose"}
 COMPOSE-FILES ?= $(shell find . -name "docker-compose.y*ml")
 COMPOSE-DEVELOPMENT-FILES ?= $(shell find . -name "docker-compose.dev*.y*ml")
+COMPOSE-PRODUCTION-FILES ?= $(shell find . -name "docker-compose.prod*.y*ml")
 EXTRA-COMPOSE-FILES ?= 
-ALL-COMPOSE-FILES = $(COMPOSE-FILES) $(COMPOSE-DEVELOPMENT-FILES) $(EXTRA-COMPOSE-FILES)
+ALL-COMPOSE-FILES = $(COMPOSE-FILES) $(COMPOSE-DEVELOPMENT-FILES) $(COMPOSE-PRODUCTION-FILES) $(EXTRA-COMPOSE-FILES)
 COMPOSE-BASE-PRESET = $(COMPOSE) $(COMPOSE-FILES:%=-f %)
 COMPOSE-DEVELOPMENT-PRESET = $(COMPOSE-BASE-PRESET) $(COMPOSE-DEVELOPMENT-FILES:%=-f %)
+COMPOSE-PRODUCTION-PRESET = $(COMPOSE-BASE-PRESET) $(COMPOSE-PRODUCTION-FILES:%=-f %)
 COMPOSE-ALL-PRESET = $(COMPOSE) $(ALL-COMPOSE-FILES:%=-f %)
 
 # Other Docker commands
