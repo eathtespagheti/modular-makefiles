@@ -1,0 +1,29 @@
+include .makefiles/docker.mk
+
+ECR_REGION ?= eu-west-1
+ECR ?= 724605015662.dkr.ecr.$(ECR_REGION).amazonaws.com
+CODEBUILD_ENVIRONMENT ?= $(ECR)/buildenvironment:latest
+CODEBUILD_ARTIFACTS ?= .aws/artifacts
+CODEBUILD_SCRIPT ?= .aws/codebuild_build.sh
+CODEBUILD_ENV ?= .aws/.env
+BUILDSPEC_FILE ?= $(shell find . -name "buildspec.y*ml" | head -n 1)
+
+.PHONY: ecr-docker-login
+ecr-docker-login: ## Login to ECR via docker
+	@aws ecr get-login-password --region $(ECR_REGION) | docker login --username AWS --password-stdin $(ECR)
+
+$(CODEBUILD_SCRIPT): ## Install the codebuild build tool
+	@curl -o $@ https://raw.githubusercontent.com/aws/aws-codebuild-docker-images/master/local_builds/codebuild_build.sh
+	@chmod +x $@
+
+$(CODEBUILD_ENV): $(shell find .git -type f)
+	@echo CODEBUILD_RESOLVED_SOURCE_VERSION="$$(git rev-parse --short HEAD)" > $@
+
+.PHONY: codebuild
+codebuild: $(CODEBUILD_SCRIPT) $(CODEBUILD_ENV) ## Run aws codebuild
+	./$(CODEBUILD_SCRIPT) -i $(CODEBUILD_ENVIRONMENT) -a $(CODEBUILD_ARTIFACTS) -b $(BUILDSPEC_FILE) -e $(CODEBUILD_ENV) -c
+
+imagedefinitions.json: $(ALL-COMPOSE-FILES) ## Generate the image definitions
+	@$(DOCKER-RUN) -d $(WEBAPP-SERVICE) sleep 5
+	@DOCKER_IMAGE="$$($(COMPOSE-ALL-PRESET) images | head -n 2 | tail -n +2 | awk '{print $$2}')" && [ -z "$$DOCKER_TAG" ] && DOCKER_TAG="$$($(COMPOSE-ALL-PRESET) images | head -n 2 | tail -n +2 | awk '{print $$3}')"; \
+	printf '[{"name":"%s","imageUri":"%s"}]' "$(WEBAPP-SERVICE)" "$$DOCKER_IMAGE:$$DOCKER_TAG" > imagedefinitions.json

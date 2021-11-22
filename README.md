@@ -45,6 +45,16 @@ Setup for node applications.
 
 Import [`docker.mk`](.makefiles/docker.mk) and change `WEBAPP-SERVICE` to `node`, adds some node specific targets
 
+### [codebuild.mk](.makefiles/codebuild.mk)
+
+Enable testing of aws codebuild projects locally.
+You need to set the following variables:
+
+* `CODEBUILD_ENVIRONMENT`: Image sued for the codebuild environment
+* `CODEBUILD_ARTIFACTS`: Output folder for the artifacts
+* `CODEBUILD_SCRIPT`: Path where to save the codebuild script
+* `CODEBUILD_ENV`: Path where to save the codebuild environment
+
 ## Write custom extensions
 
 You can obliviously write some custom modules for this makefile setup, be sure to correctly use the comments to show correctly the help command (check it with `make help`).
