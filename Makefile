@@ -2,7 +2,7 @@ EXTRA-SERVICES ::= db
 SECRETS_FOLDER ::= secrets
 SECRETS_LIST ::= db-password django-secret-key
 
-include .makefiles/django.mk
+include .makefiles/codebuild.mk
 
 .PHONY: clean
 clean: ## Launch all the clean targets
