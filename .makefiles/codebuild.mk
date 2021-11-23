@@ -34,5 +34,5 @@ $(MFA_TOKEN_GENERATOR):
 	@chmod +x $@
 
 .PHONY: aws-cli-mfa-token-generator
-aws-cli-mfa-token-generator: $(MFA_TOKEN_GENERATOR) ## Automatically generate MFA tokens for aws-cli
+aws-cli-mfa-token-generator: $(MFA_TOKEN_GENERATOR) ## Automatically generate MFA tokens for aws-cli, based on https://github.com/ofcourseme/aws-cli-mfa-token-generator
 	@$(MFA_TOKEN_GENERATOR)
