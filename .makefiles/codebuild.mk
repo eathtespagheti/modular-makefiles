@@ -1,8 +1,8 @@
 include .makefiles/docker.mk
 
 ECR_REGION ?= eu-west-1
-ECR ?= 724605015662.dkr.ecr.$(ECR_REGION).amazonaws.com
-CODEBUILD_ENVIRONMENT ?= $(ECR)/buildenvironment:latest
+ECR ?= 123456789.dkr.ecr.$(ECR_REGION).amazonaws.com
+CODEBUILD_ENVIRONMENT ?= public.ecr.aws/codebuild/amazonlinux2-x86_64-standard:3.0
 CODEBUILD_ARTIFACTS ?= .aws/artifacts
 CODEBUILD_SCRIPT ?= .aws/codebuild_build.sh
 CODEBUILD_ENV ?= .aws/.env
@@ -30,7 +30,7 @@ imagedefinitions.json: $(ALL-COMPOSE-FILES) ## Generate the image definitions
 	printf '[{"name":"%s","imageUri":"%s"}]' "$(WEBAPP-SERVICE)" "$$DOCKER_IMAGE:$$DOCKER_TAG" > imagedefinitions.json
 
 $(MFA_TOKEN_GENERATOR):
-	@curl -o $@ https://raw.githubusercontent.com/ofcourseme/aws-cli-mfa-token-generator/develop/generateAWStoken.sh
+	@curl -o $@ https://raw.githubusercontent.com/ofcourseme/aws-cli-mfa-helper/development/generateAWStoken.sh
 	@chmod +x $@
 
 .PHONY: aws-cli-mfa-token-generator
