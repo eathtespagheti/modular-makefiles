@@ -1,5 +1,3 @@
-include .makefiles/docker.mk
-
 ECR_REGION ?= eu-west-1
 ECR ?= 123456789.dkr.ecr.$(ECR_REGION).amazonaws.com
 CODEBUILD_ENVIRONMENT ?= public.ecr.aws/codebuild/amazonlinux2-x86_64-standard:3.0
