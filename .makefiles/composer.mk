@@ -1,5 +1,3 @@
-include .makefiles/docker.mk
-
 WEBAPP-SERVICE ?= php
 COMPOSER = $(DOCKER-RUN) -u $(getUID) $(WEBAPP-SERVICE) composer --no-interaction
 

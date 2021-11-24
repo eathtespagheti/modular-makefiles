@@ -1,5 +1,3 @@
-include .makefiles/composer.mk
-
 WEBAPP-SERVICE ?= symfony
 SYMFONY-RUN = $(DOCKER-RUN) $(WEBAPP-SERVICE)
 

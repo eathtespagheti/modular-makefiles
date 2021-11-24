@@ -1,5 +1,3 @@
-include .makefiles/common.mk
-
 # Docker compose realted
 COMPOSE ?= DOCKER_BUILDKIT=1 ${shell docker compose > /dev/null 2>&1 && echo "docker compose" || echo "docker-compose"}
 COMPOSE-FILES ?= $(shell find . -name "docker-compose.y*ml")
