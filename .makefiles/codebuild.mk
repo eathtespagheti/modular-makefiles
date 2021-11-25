@@ -18,6 +18,10 @@ $(CODEBUILD_SCRIPT): ## Install the codebuild build tool
 $(CODEBUILD_ENV): $(shell find .git -type f)
 	@echo CODEBUILD_RESOLVED_SOURCE_VERSION="$$(git rev-parse --short HEAD)" > $@
 
+.PHONY: pull-codebuild-environment
+pull-codebuild-environment: ## Pull the enviroment used in codebuild
+	@docker pull $(CODEBUILD_ENVIRONMENT)
+
 .PHONY: codebuild
 codebuild: $(CODEBUILD_SCRIPT) $(CODEBUILD_ENV) ## Run aws codebuild
 	./$(CODEBUILD_SCRIPT) -i $(CODEBUILD_ENVIRONMENT) -a $(CODEBUILD_ARTIFACTS) -b $(BUILDSPEC_FILE) -e $(CODEBUILD_ENV) -c
