@@ -16,7 +16,7 @@ $(CODEBUILD_SCRIPT): ## Install the codebuild build tool
 	@chmod +x $@
 
 $(CODEBUILD_ENV): $(shell find .git -type f)
-	@echo CODEBUILD_RESOLVED_SOURCE_VERSION="$$(git rev-parse --short HEAD)" > $@
+	@printf "CODEBUILD_RESOLVED_SOURCE_VERSION=%s\nDO_NOT_PUSH=true\n" "$$(git rev-parse --short HEAD)" > $@
 
 .PHONY: pull-codebuild-environment
 pull-codebuild-environment: ## Pull the enviroment used in codebuild
