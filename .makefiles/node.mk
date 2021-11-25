@@ -15,11 +15,11 @@ start: generate-from-dist ## Start node app
 
 .PHONY: test
 test: install generate-from-dist ## Test node app
-	@$(DOCKER-RUN) $(WEBAPP-SERVICE) npm test
+	@$(COMPOSE-TEST-PRESET) run --rm $(WEBAPP-SERVICE) npm test
 
 .PHONY: test-watch
 test-watch: install generate-from-dist ## Test node app and watch for changes
-	@$(DOCKER-RUN) $(WEBAPP-SERVICE) npm run test-watch
+	@$(COMPOSE-TEST-PRESET) run --rm $(WEBAPP-SERVICE) npm run test-watch
 
 .PHONY: compile
 compile: generate-from-dist ## Compile typescript
