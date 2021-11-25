@@ -24,7 +24,7 @@ pull-codebuild-environment: ## Pull the enviroment used in codebuild
 
 .PHONY: codebuild
 codebuild: $(CODEBUILD_SCRIPT) $(CODEBUILD_ENV) ## Run aws codebuild
-	./$(CODEBUILD_SCRIPT) -i $(CODEBUILD_ENVIRONMENT) -a $(CODEBUILD_ARTIFACTS) -b $(BUILDSPEC_FILE) -e $(CODEBUILD_ENV) -c
+	@./$(CODEBUILD_SCRIPT) -i $(CODEBUILD_ENVIRONMENT) -a $(CODEBUILD_ARTIFACTS) -b $(BUILDSPEC_FILE) -e $(CODEBUILD_ENV) -c
 
 imagedefinitions.json: $(ALL-COMPOSE-FILES) ## Generate the image definitions
 	@$(DOCKER-RUN) -d $(WEBAPP-SERVICE) sleep 5
