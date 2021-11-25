@@ -94,7 +94,7 @@ ps: ## List docker containers
 
 .PHONY: push
 push: ## Push all builded docker images in project
-	@$(COMPOSE-ALL-PRESET) push
+	@if [ -z "$DO_NOT_PUSH" ]; then $(COMPOSE-ALL-PRESET) push; else printf "DO_NOT_PUSH it's set to %s\nSkipping push...\n" "$DO_NOT_PUSH"; fi
 
 # Webapp container targets
 .PHONY: fix-ownership
