@@ -1,7 +1,6 @@
-EXTRA-SERVICES ::= db
-SECRETS_FOLDER ::= secrets
-SECRETS_LIST ::= db-password django-secret-key
-
+include .makefiles/common.mk
+include .makefiles/git.mk
+include .makefiles/docker.mk
 include .makefiles/codebuild.mk
 
 .PHONY: clean

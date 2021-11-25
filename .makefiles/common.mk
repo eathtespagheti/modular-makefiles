@@ -20,9 +20,3 @@ generate-from-dist: $(__DIST_FILES_NO_EXTENSION) ## Generate default files from 
 .PHONY: clean-dist-files
 clean-dist-files: ## Remove all files that could be regenrated form dist files
 	@-rm $(__DIST_FILES_NO_EXTENSION)
-
-.PHONY: nuke-git
-nuke-git: ## Remove all files in gitignore and reset the git repo
-	@-rm -rf $(shell for file in $$(find . -type f -name ".gitignore"); do dir="$$(dirname "$$file")"; grep -v "^#" "$$file" | grep -v "^$$" | sed "s#.*#$$dir/&#"; done)
-	@git reset --hard
-	@git clean -fd
