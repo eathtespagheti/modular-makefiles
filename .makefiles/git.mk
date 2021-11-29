@@ -10,4 +10,4 @@ update-submodules: ## Update all submodules
 
 .PHONY: init-submodules
 init-submodules: ## Initialize all submodules
-	@git submodule update --init --recursive
+	@git pull --recurse-submodules --jobs=10
