@@ -53,7 +53,7 @@ secrets: $(shell for secret in $(SECRETS_LIST); do printf "$(SECRETS_FOLDER)/$$s
 # Docker compose targets
 .PHONY: build
 build: ## Build all needed images from docker compose
-	@$(COMPOSE-ALL-PRESET) build
+	@$(COMPOSE-BASE-PRESET) build
 
 .PHONY: up
 up: secrets ## Docker compose up on all project files
@@ -94,7 +94,7 @@ ps: ## List docker containers
 
 .PHONY: push
 push: ## Push all builded docker images in project
-	@if [ -z "$$DO_NOT_PUSH" ]; then $(COMPOSE-ALL-PRESET) push; else printf "DO_NOT_PUSH it's set to %s\nSkipping push...\n" "$$DO_NOT_PUSH"; fi
+	@if [ -z "$$DO_NOT_PUSH" ]; then $(COMPOSE-BASE-PRESET) push; else printf "DO_NOT_PUSH it's set to %s\nSkipping push...\n" "$$DO_NOT_PUSH"; fi
 
 # Webapp container targets
 .PHONY: fix-ownership
