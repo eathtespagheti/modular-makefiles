@@ -11,9 +11,9 @@ COMPOSE-TEST-PRESET = $(COMPOSE-BASE-PRESET) $(COMPOSE-TEST-FILES:%=-f %)
 COMPOSE-ALL-PRESET = $(COMPOSE) $(ALL-COMPOSE-FILES:%=-f %)
 
 # Other Docker commands
-DOCKER-EXEC = $(COMPOSE-ALL-PRESET) exec
-DOCKER-RUN = $(COMPOSE-ALL-PRESET) run --rm
-DOCKER-LOGS = $(COMPOSE-ALL-PRESET) logs -f
+DOCKER-EXEC = $(COMPOSE-DEVELOPMENT-PRESET) exec
+DOCKER-RUN = $(COMPOSE-DEVELOPMENT-PRESET) run --rm
+DOCKER-LOGS = $(COMPOSE-DEVELOPMENT-PRESET) logs -f
 
 # Functions
 executeAsSuperuser = docker run --rm -u 0 -v "$(shell pwd)":/src alpine sh -c "$(1)"
