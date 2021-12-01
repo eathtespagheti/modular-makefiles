@@ -34,6 +34,7 @@ up-prefix ?= up-
 down-prefix ?= down-
 shell-prefix ?= shell-
 start-prefix ?= start-
+run-prefix ?= run-
 
 # Other variables
 WEBAPP-SERVICE ?= webapp
@@ -77,7 +78,7 @@ up-servicename: ## Up the service named servicename
 __COMPILED_UP_PREFIX := $(addprefix $(up-prefix), $(SERVICES))
 .PHONY: $(__COMPILED_UP_PREFIX)
 $(__COMPILED_UP_PREFIX): $(up-prefix)%:
-	@$(COMPOSE-ALL-PRESET) up -d $*
+	@$(COMPOSE-DEVELOPMENT-PRESET) up -d $*
 
 .PHONY: down
 down: ## Docker compose down on all project files
@@ -136,7 +137,15 @@ start-servicename: ## Start service named servicename
 __COMPILED_START_PREFIX := $(addprefix $(start-prefix), $(SERVICES))
 .PHONY: $(__COMPILED_START_PREFIX)
 $(__COMPILED_START_PREFIX): $(start-prefix)%:
-	@$(COMPOSE-ALL-PRESET) start $*
+	@$(COMPOSE-DEVELOPMENT-PRESET) start $*
+
+.PHONY: run-servicename
+run-servicename: ## Run service named servicename
+
+__COMPILED_RUN_PREFIX := $(addprefix $(run-prefix), $(SERVICES))
+.PHONY: $(__COMPILED_RUN_PREFIX)
+$(__COMPILED_RUN_PREFIX): $(run-prefix)%:
+	@$(DOCKER-RUN) $*
 
 .PHONY: restart-servicename
 restart-servicename: ## Restart service named servicename
@@ -144,7 +153,7 @@ restart-servicename: ## Restart service named servicename
 __COMPILED_RESTART_PREFIX := $(addprefix $(restart-prefix), $(SERVICES))
 .PHONY: $(__COMPILED_RESTART_PREFIX)
 $(__COMPILED_RESTART_PREFIX): $(restart-prefix)%:
-	@$(COMPOSE-ALL-PRESET) restart $*
+	@$(COMPOSE-DEVELOPMENT-PRESET) restart $*
 
 .PHONY: stop-servicename
 stop-servicename: ## Stop service named servicename
@@ -152,7 +161,7 @@ stop-servicename: ## Stop service named servicename
 __COMPILED_STOP_PREFIX := $(addprefix $(stop-prefix), $(SERVICES))
 .PHONY: $(__COMPILED_STOP_PREFIX)
 $(__COMPILED_STOP_PREFIX): $(stop-prefix)%:
-	@$(COMPOSE-ALL-PRESET) stop $*
+	@$(COMPOSE-DEVELOPMENT-PRESET) stop $*
 
 .PHONY: shell-servicename
 shell-servicename: ## Open shell for service named servicename
