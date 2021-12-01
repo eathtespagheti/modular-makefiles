@@ -20,6 +20,7 @@ executeAsSuperuser = docker run --rm -u 0 -v "$(shell pwd)":/src alpine sh -c "$
 fixOwnershipOf = $(call executeAsSuperuser,chown -R $(getUIDandGID) /src/$(1))
 fixOwnershipProject = $(call fixOwnershipOf,.)
 generate-random-string = tr -dc A-Za-z0-9 </dev/urandom | head -c
+checkForDoNotPush = if [ -z "$$DO_NOT_PUSH" ]; then $(1) push; else printf "DO_NOT_PUSH it's set to %s\nSkipping push...\n" "$$DO_NOT_PUSH"; fi
 
 # Services
 WEBAPP-DEBUG-SERVICE = $(WEBAPP-SERVICE)-debug
@@ -51,11 +52,20 @@ secrets: $(shell for secret in $(SECRETS_LIST); do printf "$(SECRETS_FOLDER)/$$s
 
 
 # Docker compose targets
-.PHONY: build
-build: ## Build all needed images from docker compose
+.PHONY: build-base
+build-base: ## Build only the image in the docker-compose.y*ml files
 	@$(COMPOSE-BASE-PRESET) build
+
+.PHONY: build-development
+build-development: ## Build only the image in the docker-compose.dev*.y*ml files
 	@$(COMPOSE-DEVELOPMENT-PRESET) build
+
+.PHONY: build-test
+build-test: ## Build only the image in the docker-compose.test*.y*ml files
 	@$(COMPOSE-TEST-PRESET) build
+
+.PHONY: build
+build: build-base build-development build-test ## Build all needed images from docker compose
 
 .PHONY: up
 up: secrets ## Docker compose up on all project files
@@ -94,9 +104,20 @@ nuke-docker: ## Nuke everything related to docker in this project
 ps: ## List docker containers
 	@$(COMPOSE-ALL-PRESET) ps
 
+.PHONY: push-base
+push-base: ## Push only the image in the docker-compose.y*ml files
+	@$(call checkForDoNotPush,$(COMPOSE-BASE-PRESET))
+
+.PHONY: push-development
+push-development: ## Push only the image in the docker-compose.dev*.y*ml files
+	@$(call checkForDoNotPush,$(COMPOSE-DEVELOPMENT-PRESET))
+
+.PHONY: push-test
+push-test: ## Push only the image in the docker-compose.test*.y*ml files
+	@$(call checkForDoNotPush,$(COMPOSE-TEST-PRESET))
+
 .PHONY: push
-push: ## Push all builded docker images in project
-	@if [ -z "$$DO_NOT_PUSH" ]; then $(COMPOSE-BASE-PRESET) push; else printf "DO_NOT_PUSH it's set to %s\nSkipping push...\n" "$$DO_NOT_PUSH"; fi
+push: push-base push-development push-test ## Push all needed images from docker compose
 
 # Webapp container targets
 .PHONY: fix-ownership
