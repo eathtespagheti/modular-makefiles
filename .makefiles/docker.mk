@@ -54,6 +54,8 @@ secrets: $(shell for secret in $(SECRETS_LIST); do printf "$(SECRETS_FOLDER)/$$s
 .PHONY: build
 build: ## Build all needed images from docker compose
 	@$(COMPOSE-BASE-PRESET) build
+	@$(COMPOSE-DEVELOPMENT-PRESET) build
+	@$(COMPOSE-TEST-PRESET) build
 
 .PHONY: up
 up: secrets ## Docker compose up on all project files
