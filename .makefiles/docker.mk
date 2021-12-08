@@ -11,15 +11,16 @@ COMPOSE-TEST-PRESET = $(COMPOSE-BASE-PRESET) $(COMPOSE-TEST-FILES:%=-f %)
 COMPOSE-ALL-PRESET = $(COMPOSE) $(ALL-COMPOSE-FILES:%=-f %)
 
 # Other Docker commands
-DOCKER-EXEC = $(COMPOSE-ALL-PRESET) exec
-DOCKER-RUN = $(COMPOSE-ALL-PRESET) run --rm
-DOCKER-LOGS = $(COMPOSE-ALL-PRESET) logs -f
+DOCKER-EXEC = $(COMPOSE-DEVELOPMENT-PRESET) exec
+DOCKER-RUN = $(COMPOSE-DEVELOPMENT-PRESET) run --rm
+DOCKER-LOGS = $(COMPOSE-DEVELOPMENT-PRESET) logs -f
 
 # Functions
 executeAsSuperuser = docker run --rm -u 0 -v "$(shell pwd)":/src alpine sh -c "$(1)"
 fixOwnershipOf = $(call executeAsSuperuser,chown -R $(getUIDandGID) /src/$(1))
 fixOwnershipProject = $(call fixOwnershipOf,.)
 generate-random-string = tr -dc A-Za-z0-9 </dev/urandom | head -c
+checkForDoNotPush = if [ -z "$$DO_NOT_PUSH" ]; then $(1) push; else printf "DO_NOT_PUSH it's set to %s\nSkipping push...\n" "$$DO_NOT_PUSH"; fi
 
 # Services
 WEBAPP-DEBUG-SERVICE = $(WEBAPP-SERVICE)-debug
@@ -33,6 +34,7 @@ up-prefix ?= up-
 down-prefix ?= down-
 shell-prefix ?= shell-
 start-prefix ?= start-
+run-prefix ?= run-
 
 # Other variables
 WEBAPP-SERVICE ?= webapp
@@ -51,9 +53,20 @@ secrets: $(shell for secret in $(SECRETS_LIST); do printf "$(SECRETS_FOLDER)/$$s
 
 
 # Docker compose targets
+.PHONY: build-base
+build-base: ## Build only the image in the docker-compose.y*ml files
+	@$(COMPOSE-BASE-PRESET) build
+
+.PHONY: build-development
+build-development: ## Build only the image in the docker-compose.dev*.y*ml files
+	@$(COMPOSE-DEVELOPMENT-PRESET) build
+
+.PHONY: build-test
+build-test: ## Build only the image in the docker-compose.test*.y*ml files
+	@$(COMPOSE-TEST-PRESET) build
+
 .PHONY: build
-build: ## Build all needed images from docker compose
-	@$(COMPOSE-ALL-PRESET) build
+build: build-base build-development build-test ## Build all needed images from docker compose
 
 .PHONY: up
 up: secrets ## Docker compose up on all project files
@@ -65,11 +78,15 @@ up-servicename: ## Up the service named servicename
 __COMPILED_UP_PREFIX := $(addprefix $(up-prefix), $(SERVICES))
 .PHONY: $(__COMPILED_UP_PREFIX)
 $(__COMPILED_UP_PREFIX): $(up-prefix)%:
-	@$(COMPOSE-ALL-PRESET) up -d $*
+	@$(COMPOSE-DEVELOPMENT-PRESET) up -d $*
 
 .PHONY: down
 down: ## Docker compose down on all project files
 	@$(COMPOSE-ALL-PRESET) down
+
+.PHONY: down-with-volumes
+down-with-volumes: ## Docker compose down on all project files and remove all named volumes
+	@$(COMPOSE-ALL-PRESET) down -v
 
 __COMPILED_DOWN_PREFIX := $(addprefix $(down-prefix), $(SERVICES))
 .PHONY: $(__COMPILED_DOWN_PREFIX)
@@ -92,9 +109,20 @@ nuke-docker: ## Nuke everything related to docker in this project
 ps: ## List docker containers
 	@$(COMPOSE-ALL-PRESET) ps
 
+.PHONY: push-base
+push-base: ## Push only the image in the docker-compose.y*ml files
+	@$(call checkForDoNotPush,$(COMPOSE-BASE-PRESET))
+
+.PHONY: push-development
+push-development: ## Push only the image in the docker-compose.dev*.y*ml files
+	@$(call checkForDoNotPush,$(COMPOSE-DEVELOPMENT-PRESET))
+
+.PHONY: push-test
+push-test: ## Push only the image in the docker-compose.test*.y*ml files
+	@$(call checkForDoNotPush,$(COMPOSE-TEST-PRESET))
+
 .PHONY: push
-push: ## Push all builded docker images in project
-	@if [ -z "$DO_NOT_PUSH" ]; then $(COMPOSE-ALL-PRESET) push; else printf "DO_NOT_PUSH it's set to %s\nSkipping push...\n" "$DO_NOT_PUSH"; fi
+push: push-base push-development push-test ## Push all needed images from docker compose
 
 # Webapp container targets
 .PHONY: fix-ownership
@@ -113,7 +141,15 @@ start-servicename: ## Start service named servicename
 __COMPILED_START_PREFIX := $(addprefix $(start-prefix), $(SERVICES))
 .PHONY: $(__COMPILED_START_PREFIX)
 $(__COMPILED_START_PREFIX): $(start-prefix)%:
-	@$(COMPOSE-ALL-PRESET) start $*
+	@$(COMPOSE-DEVELOPMENT-PRESET) start $*
+
+.PHONY: run-servicename
+run-servicename: ## Run service named servicename
+
+__COMPILED_RUN_PREFIX := $(addprefix $(run-prefix), $(SERVICES))
+.PHONY: $(__COMPILED_RUN_PREFIX)
+$(__COMPILED_RUN_PREFIX): $(run-prefix)%:
+	@$(DOCKER-RUN) $*
 
 .PHONY: restart-servicename
 restart-servicename: ## Restart service named servicename
@@ -121,7 +157,7 @@ restart-servicename: ## Restart service named servicename
 __COMPILED_RESTART_PREFIX := $(addprefix $(restart-prefix), $(SERVICES))
 .PHONY: $(__COMPILED_RESTART_PREFIX)
 $(__COMPILED_RESTART_PREFIX): $(restart-prefix)%:
-	@$(COMPOSE-ALL-PRESET) restart $*
+	@$(COMPOSE-DEVELOPMENT-PRESET) restart $*
 
 .PHONY: stop-servicename
 stop-servicename: ## Stop service named servicename
@@ -129,7 +165,7 @@ stop-servicename: ## Stop service named servicename
 __COMPILED_STOP_PREFIX := $(addprefix $(stop-prefix), $(SERVICES))
 .PHONY: $(__COMPILED_STOP_PREFIX)
 $(__COMPILED_STOP_PREFIX): $(stop-prefix)%:
-	@$(COMPOSE-ALL-PRESET) stop $*
+	@$(COMPOSE-DEVELOPMENT-PRESET) stop $*
 
 .PHONY: shell-servicename
 shell-servicename: ## Open shell for service named servicename
