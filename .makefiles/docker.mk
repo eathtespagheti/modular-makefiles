@@ -84,6 +84,10 @@ $(__COMPILED_UP_PREFIX): $(up-prefix)%:
 down: ## Docker compose down on all project files
 	@$(COMPOSE-ALL-PRESET) down
 
+.PHONY: down-with-volumes
+down-with-volumes: ## Docker compose down on all project files and remove all named volumes
+	@$(COMPOSE-ALL-PRESET) down -v
+
 __COMPILED_DOWN_PREFIX := $(addprefix $(down-prefix), $(SERVICES))
 .PHONY: $(__COMPILED_DOWN_PREFIX)
 $(__COMPILED_DOWN_PREFIX): $(down-prefix)%:
