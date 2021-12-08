@@ -6,7 +6,7 @@ nuke-git: ## Remove all files in gitignore and reset the git repo
 
 .PHONY: update-submodules
 update-submodules: ## Update all submodules
-	@git submodule update --recursive --remote
+	@git pull --recurse-submodules --jobs=10
 
 .PHONY: init-submodules
 init-submodules: ## Initialize all submodules
